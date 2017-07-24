@@ -1,7 +1,6 @@
-const spiImpl = require('./spi.js');
-const mcp300X = require('./mcp300X.js');
-
-let device;
+const rasbus = require('rasbus');
+const spiImpl = rasbus.pispi;
+const mcp300X = require('./src/mcp300X.js');
 
 function scale(value, vmin, vmax, tomin, tomax) {
   const vrange = vmax - vmin;
@@ -30,23 +29,23 @@ function defaultConfig() {
 function poll(config) {
   const width = 60;
 
-  device.readADC(2).then(result => {
+  config.device.readADC(0, config.Vref).then(result => {
     const value = result.normal;
     const conv = Math.round(scale(value, 0, 1, 0, width - 1));
     let line = (new Array(width)).fill(' ');
 
-    if(value > prevv){
+    if(value > config.prevv){
       line[conv] = '\\';
-    } else if(value < prevv) {
+    } else if(value < config.prevv) {
       line[conv] = '/';
     } else {
       line[conv] = '|';
     }
 
-    prevv = value;
+    config.prevv = value;
 
     console.log('[' + line.join('') + ']', trunc(value));
-
+    // console.log(result);
   }).catch(e => {
     console.log('error', e);
   });
@@ -55,8 +54,12 @@ function poll(config) {
 defaultConfig().then(config => {
   spiImpl.init(config.devicename).then(spi => {
     config.bus = spi;
+    // console.log(spi);
     mcp300X.adc(spi).then(dev => {
       config.device = dev;
+
+      // console.log(config);
+
       setInterval(poll, config.interval, config);
     });
   });
