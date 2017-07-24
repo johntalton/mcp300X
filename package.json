@@ -1,0 +1,16 @@
+{
+  "name": "mcp300x",
+  "version": "1.0.0",
+  "description": "",
+  "main": "mcp300X.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:johntalton/mcp300X.git"
+  },
+  "author": "johntalton@gmail.com",
+  "license": "MIT",
+  "devDependencies": {
+    "pi-spi": "^1.0.2"
+  }
+}
