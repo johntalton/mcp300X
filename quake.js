@@ -19,33 +19,37 @@ function trunc(value) {
 function defaultConfig() {
   return Promise.resolve({
     devicename: '/dev/spidev0.0',
-    channelmask: [ 1, 1, 1, 0, 0, 0, 0, 0],
+    channelmask: [ 0, 1, 2 ],
     Vref: 5.5,
 
-    interval: 50
+    interval: 50,
+    totalWidth: 80
   });
 }
 
+function linemaker(value, width) {
+  const conv = Math.round(scale(value, 0, 1, 0, width - 1));
+  let line = (new Array(width)).fill(' ');
+/*
+  if(value > config.prevv){
+    line[conv] = '\\';
+  } else if(value < config.prevv) {
+    line[conv] = '/';
+  } else {
+    line[conv] = '|';
+  }
+*/
+  line[conv] = '*';
+  return line.join('');
+}
+
 function poll(config) {
-  const width = 60;
+  Promise.all(config.channelmask.map(ch => { return config.device.readADC(ch); })).then(results => {
+    const width = Math.floor(config.totalWidth / results.length);
 
-  config.device.readADC(0, config.Vref).then(result => {
-    const value = result.normal;
-    const conv = Math.round(scale(value, 0, 1, 0, width - 1));
-    let line = (new Array(width)).fill(' ');
+    const fullline = results.map(result => linemaker(result.normal, width));
 
-    if(value > config.prevv){
-      line[conv] = '\\';
-    } else if(value < config.prevv) {
-      line[conv] = '/';
-    } else {
-      line[conv] = '|';
-    }
-
-    config.prevv = value;
-
-    console.log('[' + line.join('') + ']', trunc(value));
-    // console.log(result);
+    console.log('[' + fullline.join('|') + ']');
   }).catch(e => {
     console.log('error', e);
   });
@@ -55,7 +59,7 @@ defaultConfig().then(config => {
   spiImpl.init(config.devicename).then(spi => {
     config.bus = spi;
     // console.log(spi);
-    mcp300X.adc(spi).then(dev => {
+    mcp300X.adc({ bus: spi, Vref: config.Vref }).then(dev => {
       config.device = dev;
 
       // console.log(config);
