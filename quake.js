@@ -23,7 +23,7 @@ function defaultConfig() {
     channelmask: [ 0, 1, 6, 7 ],
     differentialmask: [[2,3], 6], // [2,3] -> CH2 = IN+ CH3 = IN-
                                   // 6     -> CH4 = IN- CH5 = IN+
-    Vref: 5.5,
+    Vref: 5,
 
     interval: 75,
     totalWidth: 100
@@ -50,6 +50,7 @@ function poll(config) {
   Promise.all(config.channelmask.map(ch => { return config.device.readADC(ch); })).then(results => {
     const width = Math.floor(config.totalWidth / results.length);
 
+    results.forEach(result => console.log(result.raw, result.V));
     const fullline = results.map(result => linemaker(result.normal, width));
 
     console.log('[' + fullline.join('|') + ']');

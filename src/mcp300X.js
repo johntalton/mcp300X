@@ -74,7 +74,7 @@ class Converter {
     return {
       raw: raw,
       normal: raw / (1.0 * range),
-      v: Converter.valueToVoltage(raw, Vref, range)
+      V: Converter.valueToVoltage(raw, Vref, range)
     }
   }
 }
