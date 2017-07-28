@@ -50,7 +50,7 @@ function poll(config) {
   Promise.all(config.channelmask.map(ch => { return config.device.readADC(ch); })).then(results => {
     const width = Math.floor(config.totalWidth / results.length);
 
-    results.forEach(result => console.log(result.raw, result.V));
+    // results.forEach(result => console.log(result.raw, result.V));
     const fullline = results.map(result => linemaker(result.normal, width));
 
     console.log('[' + fullline.join('|') + ']');
