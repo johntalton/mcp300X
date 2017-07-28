@@ -19,6 +19,7 @@ function trunc(value) {
 function defaultConfig() {
   return Promise.resolve({
     devicename: '/dev/spidev0.0',
+    channels: 8,
     channelmask: [ 0, 1, 6, 7 ],
     differentialmask: [[2,3], 6], // [2,3] -> CH2 = IN+ CH3 = IN-
                                   // 6     -> CH4 = IN- CH5 = IN+
@@ -61,7 +62,7 @@ defaultConfig().then(config => {
   spiImpl.init(config.devicename).then(spi => {
     config.bus = spi;
     // console.log(spi);
-    mcp300X.adc({ bus: spi, Vref: config.Vref }).then(dev => {
+    mcp300X.adc({ bus: spi, Vref: config.Vref, channels: config.channels }).then(dev => {
       config.device = dev;
 
       // console.log(config);

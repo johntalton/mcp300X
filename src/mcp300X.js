@@ -9,25 +9,25 @@ class mcp300X {
   constructor(config) {
     this.bus = config.bus;
     this.Vref = config.Vref;
-    this.channels = 8; // no good auto detect
+    this.channels = config.channels;
     this.range = 1023;  // from spec
   }
 
   readADCDiff(posChOrPair, negCh) {
     const piar = (negCh === undefined) ? posChOrPair : Common.channelSetToPair(posChOrPair, negCh);
-    return this._read(Common.spiAlignControl(Common.pseudoDifferential(pair))).then(raw => {
+    return this._read(Common.pseudoDifferential(pair)).then(raw => {
       return Converter.format(raw, this.range, this.Vref);
     });
   }
 
   readADC(channel) {
-    return this._read(Common.spiAlignControl(Common.single(channel))).then(raw => {
+    return this._read(Common.single(channel)).then(raw => {
       return Converter.format(raw, this.range, this.Vref);
     });
   }
 
   _read(cmd) {
-    return this.bus.read(cmd, 2).then(buf => {
+    return this.bus.read(Common.spiAlignControl(cmd), 2).then(buf => {
       return Common.read10(buf[0], buf[1]);
     });
   }
