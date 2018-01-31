@@ -21,7 +21,7 @@ function defaultConfig() {
     devicename: '/dev/spidev0.0',
     channels: 8,
     channelmask: [ 0, 1, 6, 7 ],
-    differentialmask: [[2,3], 6], // [2,3] -> CH2 = IN+ CH3 = IN-
+    // differentialmask: [[2,3], 6], // [2,3] -> CH2 = IN+ CH3 = IN-
                                   // 6     -> CH4 = IN- CH5 = IN+
     Vref: 5,
 

@@ -55,7 +55,7 @@ class Common {
     if(posCh === 2 && negCh === 3) { return 2; } // 2 3 -> 2
     if(posCh === 3 && negCh === 2) { return 3; } // 3 2 -> 3
     if(posCh === 4 && negCh === 5) { return 4; } // 4 5 -> 4
-    if(posCh === 5 && negCh === 4) { return 5; } // 5 5 -> 5
+    if(posCh === 5 && negCh === 4) { return 5; } // 5 4 -> 5
     if(posCh === 6 && negCh === 7) { return 6; } // 6 7 -> 6
     if(posCh === 7 && negCh === 6) { return 7; } // 7 6 -> 7
     throw new Error('unknown channel set: +', posCh + ' -' + negCh);
