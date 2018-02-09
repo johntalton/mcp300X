@@ -1,6 +1,6 @@
 const rasbus = require('rasbus');
 const spiImpl = rasbus.pispi;
-const mcp300X = require('./src/mcp300X.js');
+const mcp300X = require('../src/mcp300X.js');
 
 function scale(value, vmin, vmax, tomin, tomax) {
   const vrange = vmax - vmin;
