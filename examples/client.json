@@ -1,0 +1,19 @@
+{
+  "name": "demo",
+  "bus": { "driver": "pispi", "id": [ "/dev/spidev0.0" ] },
+
+  "Vref": 5,
+
+  "channels": [
+    { "name": "photocell", "id": 0, "intervalS": 42  },
+    { "name": "ledPot", "id": 1, "intervalS": 5 },
+    { "name": "ina169", "id": 2, "intervalS": 60 },
+    { "name": "feddbackLeft", "id": 6, "intervalMs": 100, "active": false },
+    { "name": "feedbackRight", "id": 7, "intervalMs": 100, "active": false }
+  ],
+
+  "mqtt": {
+    "topic": "/ADC/+",
+    "reconnectS": 30
+  }
+}
