@@ -131,7 +131,7 @@ function configure(config) {
   config.state = 'init';
 
   config.emitter.on('data', (chname, data) => {
-    const topic = '/ADC/pwm0/' + chname; // config.mqtt.topic .replace + with chname
+    const topic = '/ADC/demo/' + chname; // config.mqtt.topic .replace + with chname
     const message = JSON.stringify({
       name: chname,
       raw: data.raw,

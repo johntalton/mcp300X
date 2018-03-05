@@ -1,3 +1,5 @@
+"use strict";
+
 /**
  *
  */
@@ -8,8 +10,9 @@ class mcp300X {
 
   constructor(config) {
     this.bus = config.bus;
-    this.Vref = config.Vref;
     this.channels = config.channels;
+    this.Vref = config.Vref;
+
     this.range = 1023;  // from spec
   }
 
@@ -66,15 +69,19 @@ class Common {
  *
  */
 class Converter {
-  static  valueToVoltage(value, Vref, range) {
-    return value * Vref / range;
+  static valueToVoltage(value, Vref, range) {
+    return value * Vref / (1.0 * range);
   }
 
   static format(raw, range, Vref) {
+    const V = Converter.valueToVoltage(raw, Vref, range);
+    // const normal = V / (1.0 * Vref);
+    const normal = raw / (1.0 * range);
+
     return {
       raw: raw,
-      normal: raw / (1.0 * range),
-      V: Converter.valueToVoltage(raw, Vref, range)
+      normal: normal,
+      V: V
     }
   }
 }
