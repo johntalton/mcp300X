@@ -50,14 +50,20 @@ class Config {
 
     let mqtt = {
       url: process.env.mqtturl,
-      reconnectMs: 30 * 1000
+      reconnectMs: 30 * 1000,
+      topic: '\ADC\demo'
     };
+
     if(config.mqtt !== undefined) {
       if(config.mqtt.url !== undefined) { mqtt.url = config.mqtt.url; }
 
       const S = config.mqtt.reconnectS ? config.mqtt.reconnectS : 0;
       const Ms = config.mqtt.reconnectlMs ? config.mqtt.reconnectMs : 0;
       mqtt.reconnectMS = S * 1000 + Ms;
+
+      if(config.mqtt.topic !== undefined) {
+        mqtt.topic = config.mqtt.topic;
+      }
     }
 
     return {
@@ -131,16 +137,18 @@ function configure(config) {
   config.state = 'init';
 
   config.emitter.on('data', (chname, data) => {
-    const topic = '/ADC/demo/' + chname; // config.mqtt.topic .replace + with chname
+    const topic = config.mqtt.topic;
     const message = JSON.stringify({
+      deviceName: config.name,
       name: chname,
-      raw: data.raw,
-      normal: data.normal,
-      V: data.V
+      ...data
+      //raw: data.raw,
+      //normal: data.normal,
+      //V: data.V
     });
     config.mqtt.client.publish(topic, message, {}, err => {
-      if(err) {}
-      console.log('published', topic, message)
+      if(err) { throw Error('topic publish error: ' + err); }
+      console.log('published', topic, message);
     });
   });
 }

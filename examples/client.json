@@ -1,19 +1,24 @@
 {
-  "name": "demo",
+  "name": "centralADC",
   "bus": { "driver": "pispi", "id": [ "/dev/spidev0.0" ] },
 
   "Vref": 5,
 
   "channels": [
-    { "name": "photocell", "id": 0, "intervalS": 42  },
-    { "name": "ledPot", "id": 1, "intervalS": 5 },
+
+    { "name": "pwm-ref", "id": 0, "intervalMs": 100, "active": false },
     { "name": "ina169", "id": 2, "intervalS": 60 },
-    { "name": "feddbackLeft", "id": 6, "intervalMs": 100, "active": false },
-    { "name": "feedbackRight", "id": 7, "intervalMs": 100, "active": false }
+    { "name": "Blue Potentiometer", "id": 1, "intervalS": 5, "_normalJitter": 0, "active": true },
+
+    { "name": "photocell-10k", "id": 6, "intervalS": 3, "_rawJitter": 0, "active": true  },
+    { "name": "photocell-560", "id": 7, "intervalS": 5, "_rawJitter": 0, "active": true  },
+
+    { "name": "feddbackLeft", "id": 4, "intervalMs": 500, "_normalJitter": 0.001, "active": false },
+    { "name": "feedbackRight", "id": 5, "intervalMs": 500, "active": false }
   ],
 
   "mqtt": {
-    "topic": "/ADC/+",
+    "topic": "/ADC/sample",
     "reconnectS": 30
   }
 }

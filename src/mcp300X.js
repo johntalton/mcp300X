@@ -18,20 +18,25 @@ class mcp300X {
 
   readADCDiff(posChOrPair, negCh) {
     const piar = (negCh === undefined) ? posChOrPair : Common.channelSetToPair(posChOrPair, negCh);
-    return this._read(Common.pseudoDifferential(pair)).then(raw => {
-      return Converter.format(raw, this.range, this.Vref);
+    return this._read(Common.pseudoDifferential(pair)).then(sample => {
+      return Converter.format(sample, this.range, this.Vref);
     });
   }
 
   readADC(channel) {
-    return this._read(Common.single(channel)).then(raw => {
-      return Converter.format(raw, this.range, this.Vref);
+    return this._read(Common.single(channel)).then(sample => {
+      return Converter.format(sample, this.range, this.Vref);
     });
   }
 
   _read(cmd) {
     return this.bus.read(Common.spiAlignControl(cmd), 2).then(buf => {
-      return Common.read10(buf[0], buf[1]);
+      const timestamp = Date.now();
+      const raw = Common.read10(buf[0], buf[1]);
+      return {
+        timestamp: timestamp,
+        raw: raw
+      };
     });
   }
 }
@@ -69,19 +74,21 @@ class Common {
  *
  */
 class Converter {
+  static normalizeRaw(raw, range) { return raw / (range * 1.0); }
+
   static valueToVoltage(value, Vref, range) {
-    return value * Vref / (1.0 * range);
+    return Vref * Converter.normalizeRaw(value, range);
   }
 
-  static format(raw, range, Vref) {
-    const V = Converter.valueToVoltage(raw, Vref, range);
-    // const normal = V / (1.0 * Vref);
-    const normal = raw / (1.0 * range);
+  static format(sample, range, Vref) {
+    const V = Converter.valueToVoltage(sample.raw, Vref, range);
+    const normal = Converter.normalizeRaw(sample.raw, range);
 
     return {
-      raw: raw,
+      ...sample,
       normal: normal,
-      V: V
+      V: V,
+      Vref: Vref
     }
   }
 }
