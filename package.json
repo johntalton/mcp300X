@@ -11,9 +11,9 @@
   "author": "johntalton@gmail.com",
   "license": "MIT",
   "dependencies": {
-    "mqtt": "^2.15.3",
-    "pi-spi": "^1.0.2",
-    "rasbus": "file:../rasbus",
-    "spi": "^0.2.0"
+    "rasbus": "file:../rasbus"
+  },
+  "devDependencies": {
+    "mqtt": "^2.17.0"
   }
 }
