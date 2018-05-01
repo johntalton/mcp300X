@@ -1,7 +1,7 @@
 "use strict";
 
 const rasbus = require('rasbus');
-const spiImpl = rasbus.pispi;
+const spiImpl = rasbus.byname('pi-spi');
 const mcp300X = require('../src/mcp300X.js');
 
 function scale0(x, in_min, in_max, out_min, out_max) {
@@ -31,7 +31,7 @@ function trunc(value) {
 
 function defaultConfig() {
   return Promise.resolve({
-    devicename: '/dev/spidev0.0',
+    devicename: '/dev/spidev0.42',
     channels: 8,
     channelmask: [ 0, 1, 2, 3, 4, 5, 6, 7 ],
     // differentialmask: [[2,3], 6], // [2,3] -> CH2 = IN+ CH3 = IN-

@@ -66,6 +66,8 @@ class Config {
       }
     }
 
+    if(mqtt.url === undefined) { throw Error('must specify mqtt url'); }
+
     return {
       name: config.name,
       bus: config.bus,

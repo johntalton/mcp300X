@@ -1,14 +1,14 @@
 {
   "name": "centralADC",
-  "bus": { "driver": "pispi", "id": [ "/dev/spidev0.0" ] },
+  "bus": { "driver": "pispi", "id": [ "/dev/spidev0.42" ] },
 
   "Vref": 5,
 
   "channels": [
 
     { "name": "pwm-ref", "id": 0, "intervalMs": 100, "active": false },
-    { "name": "ina169", "id": 2, "intervalS": 60 },
-    { "name": "Blue Potentiometer", "id": 1, "intervalS": 5, "_normalJitter": 0, "active": true },
+    { "name": "ina169", "id": 1, "intervalS": 60 },
+    { "name": "Blue Potentiometer", "id": 2, "intervalS": 5, "_normalJitter": 0, "active": true },
 
     { "name": "photocell-10k", "id": 6, "intervalS": 3, "_rawJitter": 0, "active": true  },
     { "name": "photocell-560", "id": 7, "intervalS": 5, "_rawJitter": 0, "active": true  },
