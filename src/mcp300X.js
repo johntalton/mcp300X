@@ -74,7 +74,15 @@ class Common {
  *
  */
 class Converter {
-  static normalizeRaw(raw, range) { return raw / (range * 1.0); }
+  static precisionRound(number, precision) {
+    const factor = Math.pow(10, precision);
+    return Math.round(number * factor) / factor;
+  }
+
+  static normalizeRaw(raw, range) {
+    const tmp = raw / (range * 1.0);
+    return Converter.precisionRound(tmp, 10); // todo hmmm
+  }
 
   static valueToVoltage(value, Vref, range) {
     return Vref * Converter.normalizeRaw(value, range);
