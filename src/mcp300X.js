@@ -1,45 +1,4 @@
-"use strict";
 
-/**
- *
- */
-class mcp300X {
-  static adc(config) {
-    return Promise.resolve(new mcp300X(config));
-  }
-
-  constructor(config) {
-    this.bus = config.bus;
-    this.channels = config.channels;
-    this.Vref = config.Vref;
-
-    this.range = 1023;  // from spec
-  }
-
-  readADCDiff(posChOrPair, negCh) {
-    const piar = (negCh === undefined) ? posChOrPair : Common.channelSetToPair(posChOrPair, negCh);
-    return this._read(Common.pseudoDifferential(pair)).then(sample => {
-      return Converter.format(sample, this.range, this.Vref);
-    });
-  }
-
-  readADC(channel) {
-    return this._read(Common.single(channel)).then(sample => {
-      return Converter.format(sample, this.range, this.Vref);
-    });
-  }
-
-  _read(cmd) {
-    return this.bus.read(Common.spiAlignControl(cmd), 2).then(buf => {
-      const timestamp = Date.now();
-      const raw = Common.read10(buf[0], buf[1]);
-      return {
-        timestamp: timestamp,
-        raw: raw
-      };
-    });
-  }
-}
 
 /**
  *
@@ -80,7 +39,7 @@ class Converter {
   }
 
   static normalizeRaw(raw, range) {
-    const tmp = raw / (range * 1.0);
+    const tmp = raw / range;
     return Converter.precisionRound(tmp, 10); // todo hmmm
   }
 
@@ -98,6 +57,47 @@ class Converter {
       V: V,
       Vref: Vref
     }
+  }
+}
+
+/**
+ *
+ */
+class mcp300X {
+  static adc(config) {
+    return Promise.resolve(new mcp300X(config));
+  }
+
+  constructor(config) {
+    this.bus = config.bus;
+    this.channels = config.channels;
+    this.Vref = config.Vref;
+
+    this.range = 1023; // from spec
+  }
+
+  readADCDiff(posChOrPair, negCh) {
+    const pair = (negCh === undefined) ? posChOrPair : Common.channelSetToPair(posChOrPair, negCh);
+    return this._read(Common.pseudoDifferential(pair)).then(sample => {
+      return Converter.format(sample, this.range, this.Vref);
+    });
+  }
+
+  readADC(channel) {
+    return this._read(Common.single(channel)).then(sample => {
+      return Converter.format(sample, this.range, this.Vref);
+    });
+  }
+
+  _read(cmd) {
+    return this.bus.read(Common.spiAlignControl(cmd), 2).then(buf => {
+      const timestamp = Date.now();
+      const raw = Common.read10(buf[0], buf[1]);
+      return {
+        timestamp: timestamp,
+        raw: raw
+      };
+    });
   }
 }
 

@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "mcp300X.js",
-  "scripts": {},
+  "scripts": {
+    "lint": "./node_modules/.bin/eslint ."
+  },
   "repository": {
     "type": "git",
     "url": "git@github.com:johntalton/mcp300X.git"
@@ -14,6 +16,7 @@
     "rasbus": "file:../rasbus"
   },
   "devDependencies": {
+    "eslint": "^4.19.1",
     "mqtt": "^2.17.0"
   }
 }

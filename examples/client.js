@@ -1,4 +1,3 @@
-"use strict";
 
 const fs = require('fs');
 const { EventEmitter } = require('events');
@@ -48,21 +47,21 @@ class Config {
       };
     });
 
-    let mqtt = {
+    const mqttcfg = {
       url: process.env.mqtturl,
       reconnectMs: 30 * 1000,
-      topic: '\ADC\demo'
+      topic: '/ADC/demo'
     };
 
     if(config.mqtt !== undefined) {
-      if(config.mqtt.url !== undefined) { mqtt.url = config.mqtt.url; }
+      if(config.mqtt.url !== undefined) { mqttcfg.url = config.mqtt.url; }
 
       const S = config.mqtt.reconnectS ? config.mqtt.reconnectS : 0;
       const Ms = config.mqtt.reconnectlMs ? config.mqtt.reconnectMs : 0;
-      mqtt.reconnectMS = S * 1000 + Ms;
+      mqttcfg.reconnectMS = S * 1000 + Ms;
 
       if(config.mqtt.topic !== undefined) {
-        mqtt.topic = config.mqtt.topic;
+        mqttcfg.topic = config.mqtt.topic;
       }
     }
 
@@ -73,7 +72,7 @@ class Config {
       bus: config.bus,
       Vref: Vref,
       channels: channels,
-      mqtt: mqtt
+      mqtt: mqttcfg
     }
   }
 }
@@ -83,7 +82,7 @@ class Store {
     const client = mqtt.connect(process.env.mqtturl, { reconnextPeriod: config.mqtt.reconnectMs });
     client.on('connect', () => { config.emitter.emit('online'); });
     client.on('offline', () => { config.emitter.emit('offline'); });
-    client.on('error', e => { console.log(e); process.exit(-1); });
+    client.on('error', e => { console.log(e); throw Error('mqtt error:' + e.toString()); });
 
     config.mqtt.client = client;
   }
@@ -106,23 +105,27 @@ class Sensor {
       .then(adc => { config.client = adc; config.emitter.emit('up'); });
   }
 
-  static retry(config) {}
+  static async retry(config) {
+    await Sensor.setup(config)
+      .catch(e => { console.log('retry error', config.name, e); });
+  }
 
   static start(config) {
     console.log('START');
     return Promise.all(config.channels
       .filter(ch => ch.active)
       .map(ch => {
-      console.log(' start ch', ch.name);
-      ch.timmer = setInterval(Sensor.poll, ch.intervalMs, config, ch);
-    }));
+        console.log(' start ch', ch.name);
+        ch.timmer = setInterval(Sensor.poll, ch.intervalMs, config, ch);
+        return true;
+      }));
   }
 
   static stop() {}
 
-  static poll(config, channel) {
+  static async poll(config, channel) {
     //console.log('poll channel', channel.name);
-    config.client.readADC(channel.id)
+    await config.client.readADC(channel.id)
       .then(results => {
         //console.log('results', results);
         config.emitter.emit('data', channel.name, results);
@@ -140,6 +143,7 @@ function configure(config) {
 
   config.emitter.on('data', (chname, data) => {
     const topic = config.mqtt.topic;
+
     const message = JSON.stringify({
       deviceName: config.name,
       name: chname,
@@ -171,7 +175,10 @@ function configureSensor(config) {
 function configureStore(config) {
   config.emitter.on('online', () => {
     if(config.state === 'init') { config.state = 'online'; }
-    else if(config.state === 'up') { Sensor.start(config).catch(e => {}); config.state = 'go'; }
+    else if(config.state === 'up') {
+      Sensor.start(config).catch(e => { console.log('start error on up', e); });
+      config.state = 'go';
+    }
     else { throw Error('unknown up state: ' + config.state); }
   });
   config.emitter.on('offline', () => {

@@ -1,4 +1,3 @@
-"use strict";
 
 const rasbus = require('rasbus');
 const spiImpl = rasbus.byname('pi-spi');
@@ -25,9 +24,7 @@ function scale(value, vmin, vmax, tomin, tomax) {
   return tov;
 }
 
-function trunc(value) {
-  return Math.floor(value * 100.0) / 100.0;
-}
+// function trunc(value) { return Math.floor(value * 100.0) / 100.0; }
 
 function defaultConfig() {
   return Promise.resolve({
@@ -48,7 +45,7 @@ function linemaker(value, width) {
 
 
   const conv = Math.round(scale(value, 0, 1, 0, width - 1));
-  let line = (new Array(width)).fill(' ');
+  const line = (new Array(width)).fill(' ');
 /*
   if(value > config.prevv){
     line[conv] = '\\';
