@@ -2,7 +2,7 @@
 const fs = require('fs');
 const { EventEmitter } = require('events');
 
-const mqtt = require('mqtt');
+const Mqtt = require('mqtt');
 
 const rasbus = require('rasbus');
 
@@ -65,7 +65,7 @@ class Config {
       }
     }
 
-    if(mqtt.url === undefined) { throw Error('must specify mqtt url'); }
+    if(mqttcfg.url === undefined) { throw Error('must specify mqtt url'); }
 
     return {
       name: config.name,
@@ -79,7 +79,7 @@ class Config {
 
 class Store {
   static setupWithRetry(config) {
-    const client = mqtt.connect(process.env.mqtturl, { reconnextPeriod: config.mqtt.reconnectMs });
+    const client = Mqtt.connect(config.mqtt.url, { reconnextPeriod: config.mqtt.reconnectMs });
     client.on('connect', () => { config.emitter.emit('online'); });
     client.on('offline', () => { config.emitter.emit('offline'); });
     client.on('error', e => { console.log(e); throw Error('mqtt error:' + e.toString()); });
