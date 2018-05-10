@@ -1,6 +1,7 @@
 {
   "name": "centralADC",
-  "bus": { "driver": "spidevice", "id": [ 0, 42 ] },
+  "_bus": { "driver": "spidevice", "id": [ 0, 42 ] },
+  "bus": { "driver": "pispi", "id": [ 42 ] },
 
   "Vref": 5,
 
