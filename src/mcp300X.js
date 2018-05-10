@@ -2,18 +2,15 @@
 
 /**
  *
- */
+ **/
 class Common {
   static single(ch) { return 0b1000 | (ch & 0b111); }
   static pseudoDifferential(pair) { return pair & ~0b1000; }
 
-  static spiAlignControl(control) {
-    return [1, ((control & 0b1111) << 4)];
-  }
-
   static read10(msb, lsb) {
-    if((msb & 0b100) !== 0) { throw new Error('10-bit missing leading null'); }
-    return ((msb & 0b011) << 8) | lsb;
+    const cleanMsb = msb & 0b111;
+    if((cleanMsb & 0b100) !== 0) { throw Error('10-bit missing leading null: ' + msb); }
+    return ((cleanMsb & 0b011) << 8) | lsb;
   }
 
   static channelSetToPair(posCh, negCh) {
@@ -31,7 +28,7 @@ class Common {
 
 /**
  *
- */
+ **/
 class Converter {
   static precisionRound(number, precision) {
     const factor = Math.pow(10, precision);
@@ -62,7 +59,7 @@ class Converter {
 
 /**
  *
- */
+ **/
 class mcp300X {
   static adc(config) {
     return Promise.resolve(new mcp300X(config));
@@ -90,14 +87,22 @@ class mcp300X {
   }
 
   _read(cmd) {
-    return this.bus.read(Common.spiAlignControl(cmd), 2).then(buf => {
+    return this._readAligned(cmd, 2).then(buf => {
       const timestamp = Date.now();
-      const raw = Common.read10(buf[0], buf[1]);
+      const msb = buf.readUInt8(0);
+      const lsb = buf.readUInt8(1);
+      const raw = Common.read10(msb, lsb);
       return {
         timestamp: timestamp,
         raw: raw
       };
     });
+  }
+
+  _readAligned(control, length) {
+    // align read to byte boundry by padding zeros with a start bit first
+    return this.bus.read([1, (control & 0b1111) << 4, 0], length + 1)
+      .then(buf => buf.slice(1)); // slice creates offset view of buffer - cheep
   }
 }
 

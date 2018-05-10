@@ -3,6 +3,12 @@ const rasbus = require('rasbus');
 const spiImpl = rasbus.byname('pi-spi');
 const mcp300X = require('../src/mcp300X.js');
 
+function rangeArray(cnt) {
+  const a = new Array(cnt);
+  a.fill(0);
+  return a;
+}
+
 function scale0(x, in_min, in_max, out_min, out_max) {
   return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
@@ -28,7 +34,8 @@ function scale(value, vmin, vmax, tomin, tomax) {
 
 function defaultConfig() {
   return Promise.resolve({
-    devicename: '/dev/spidev0.42',
+    deviceprams: [ 42 ],
+    //deviceprams: [0, 42],
     channels: 8,
     channelmask: [ 0, 1, 2, 3, 4, 5, 6, 7 ],
     // differentialmask: [[2,3], 6], // [2,3] -> CH2 = IN+ CH3 = IN-
@@ -61,31 +68,37 @@ function linemaker(value, width) {
 
 const q = [];
 
-function poll(config) {
-  Promise.all(config.channelmask.map(ch => { return config.device.readADC(ch); })).then(results => {
-    //const width = Math.floor(config.totalWidth / results.length);
-q.push(results);
-    // results.forEach(result => console.log(result.raw, result.V));
-    //const fullline = results.map(result => linemaker(result.normal, width));
-
-    //const delta = Date.now() - config._startTime;
-    // console.log(delta, '[' + fullline.join('|') + ']');
-  }).catch(e => {
+async function poll(config) {
+  await Promise.all(rangeArray(50).map(() => {
+//    console.log('doing a time')
+    return Promise.all(config.channelmask.map(ch => config.device.readADC(ch)))
+      .then(results => {
+        //console.log(results);
+        q.push(results);
+      });
+  }))
+  .catch(e => {
     console.log('error', e);
   });
 }
 
 function log(config) {
-  q.forEach(results => {
+  //if(q.length <= 0) { console.log('****'); }
+
+//  return console.log(q); q = [];
+  //q.slice(Math.max(q.length - 50, 1)).forEach(results => {
+
+  rangeArray(Math.min(q.length, 15)).forEach(() => {
+    const results = q.pop();
     const width = Math.floor(config.totalWidth / results.length);
     const fullline = results.map(result => linemaker(result.normal, width));
-    console.log('[' + fullline.join('|') + ']', q.length);
+    console.log('[' + fullline.join('|') + ']');
   });
-  q.length = 0;
+  //q.length = 0;
 }
 
 defaultConfig().then(config => {
-  spiImpl.init(config.devicename).then(spi => {
+  return spiImpl.init(...config.deviceprams).then(spi => {
     config.bus = spi;
     // console.log(spi);
     mcp300X.adc({ bus: spi, Vref: config.Vref, channels: config.channels }).then(dev => {
@@ -94,8 +107,8 @@ defaultConfig().then(config => {
       // console.log(config);
       config._startTime = Date.now();
 
-      setInterval(log, 100, config);
-      setInterval(poll, config.interval, config);
+      setInterval(log, 50, config);
+      setInterval(poll, 250, config);
     });
   });
 }).catch(e => {
