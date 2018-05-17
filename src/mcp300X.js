@@ -101,8 +101,7 @@ class mcp300X {
 
   _readAligned(control, length) {
     // align read to byte boundry by padding zeros with a start bit first
-    return this.bus.read([1, (control & 0b1111) << 4, 0], length + 1)
-      .then(buf => buf.slice(1)); // slice creates offset view of buffer - cheep
+    return this.bus.read([1, (control & 0b1111) << 4], length + 1);
   }
 }
 
