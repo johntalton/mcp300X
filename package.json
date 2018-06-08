@@ -13,7 +13,7 @@
   "author": "johntalton@gmail.com",
   "license": "MIT",
   "dependencies": {
-    "rasbus": "file:../rasbus"
+    "rasbus": "johntalton/rasbus@lastMultiplex"
   },
   "devDependencies": {
     "eslint": "^4.19.1",
