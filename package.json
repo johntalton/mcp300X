@@ -2,7 +2,7 @@
   "name": "@johntalton/mcp300X",
   "version": "1.0.0",
   "description": "",
-  "main": "mcp300X.js",
+  "main": "src/mcp300X.js",
   "scripts": {
     "lint": "./node_modules/.bin/eslint ."
   },
