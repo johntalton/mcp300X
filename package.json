@@ -1,5 +1,5 @@
 {
-  "name": "mcp300x",
+  "name": "@johntalton/mcp300X",
   "version": "1.0.0",
   "description": "",
   "main": "mcp300X.js",
@@ -13,7 +13,6 @@
   "author": "johntalton@gmail.com",
   "license": "MIT",
   "dependencies": {
-    "rasbus": "johntalton/rasbus@lastMultiplex"
   },
   "devDependencies": {
     "eslint": "^7.3.1",
