@@ -2,27 +2,33 @@
 
 Implemntation of the mcp3004/mcp3008 ADC chip.
 
+[![npm Version](https://img.shields.io/npm/v/@johntalton/mcp300x.svg)](https://www.npmjs.com/package/@johntalton/mcp300x)
+![GitHub package.json version](https://img.shields.io/github/package-json/v/johntalton/mcp300x)
+![CI](https://github.com/johntalton/mcp300x/workflows/CI/badge.svg?branch=master&event=push)
+![GitHub](https://img.shields.io/github/license/johntalton/mcp300x)
+[![Downloads Per Month](https://img.shields.io/npm/dm/@johntalton/mcp300x.svg)](https://www.npmjs.com/package/@johntalton/mcp300x)
+![GitHub last commit](https://img.shields.io/github/last-commit/johntalton/mcp300x)
+
+
 Features:
 - Provides access to pseudo differential mode 
 - Does not assume Vref and Vin are the same
-- User selectable SPI bus implementation (spi, pi-spi, spi-device ... via rasbus)
 
 And while this implementation is more verbose, it does so in order to aid in clarity of understanding and for learning.
 
 ## Sample Usage
 
-```
-const mcp300X = require('./mcp300X.js');
+```javascript
+const cp300X = require('@johntalton/mcp300X');
 const spi = ...
 
-mcp300X.adc({ bus: spi, Vref: 5, channels: 8 }).then(dev => {
-  ...
-  dev.readADC(channel).then(result => {
-     console.log('normalized value', result.normal);
-     console.log('voltage', result.V);
-  })
-});
+const adc = await mcp300X.adc({ bus: spi, Vref: 5, channels: 8 })
+const result = await dev.readADC(channel)
+
+console.log('normalized value', result.normal)
+console.log('voltage', result.V)
 ```
+
 In the usage above our Analog circitry is running at 5V, while the chip is running at 3.3V configuration.  
 
 The returned ```result``` object holds the ```normal```-ized value, as well as the ```raw``` ADC value and the ```V``oltage as calculated.
