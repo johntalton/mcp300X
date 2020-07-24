@@ -8,7 +8,7 @@ Implemntation of the mcp3004/mcp3008 ADC chip.
 ![GitHub](https://img.shields.io/github/license/johntalton/mcp300x)
 [![Downloads Per Month](https://img.shields.io/npm/dm/@johntalton/mcp300x.svg)](https://www.npmjs.com/package/@johntalton/mcp300x)
 ![GitHub last commit](https://img.shields.io/github/last-commit/johntalton/mcp300x)
-
+[![Package Quality](https://npm.packagequality.com/shield/%40johntalton%2Fmcp300x.svg)](https://packagequality.com/#?package=@johntalton/mcp300x)
 
 Features:
 - Provides access to pseudo differential mode 
