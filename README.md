@@ -1,6 +1,6 @@
 # mcp300X
 
-Implemntation of the mcp3004/mcp3008 ADC chip.
+Implementation of the mcp3004/mcp3008 ADC chip.
 
 [![npm Version](https://img.shields.io/npm/v/@johntalton/mcp300x.svg)](https://www.npmjs.com/package/@johntalton/mcp300x)
 ![GitHub package.json version](https://img.shields.io/github/package-json/v/johntalton/mcp300x)
@@ -11,7 +11,7 @@ Implemntation of the mcp3004/mcp3008 ADC chip.
 [![Package Quality](https://npm.packagequality.com/shield/%40johntalton%2Fmcp300x.svg)](https://packagequality.com/#?package=@johntalton/mcp300x)
 
 Features:
-- Provides access to pseudo differential mode 
+- Provides access to pseudo differential mode
 - Does not assume Vref and Vin are the same
 
 And while this implementation is more verbose, it does so in order to aid in clarity of understanding and for learning.
@@ -19,17 +19,17 @@ And while this implementation is more verbose, it does so in order to aid in cla
 ## Sample Usage
 
 ```javascript
-const cp300X = require('@johntalton/mcp300X');
+import { mcp300x } = from '@johntalton/mcp300X'
 const spi = ...
+const adc = mcp300X.from({ bus: spi, Vref: 5, channels: 8 })
 
-const adc = await mcp300X.adc({ bus: spi, Vref: 5, channels: 8 })
 const result = await dev.readADC(channel)
 
 console.log('normalized value', result.normal)
 console.log('voltage', result.V)
 ```
 
-In the usage above our Analog circitry is running at 5V, while the chip is running at 3.3V configuration.  
+In the usage above our Analog circuitry is running at 5V, while the chip is running at 3.3V configuration.
 
 The returned ```result``` object holds the ```normal```-ized value, as well as the ```raw``` ADC value and the ```V``oltage as calculated.
 
@@ -53,6 +53,6 @@ From the spec:
 
 ```
   ...
-  dev.readADCDiff(6).then(result => { ... }) // index-channel 6 or +Ch5 / -Ch4 
+  dev.readADCDiff(6).then(result => { ... }) // index-channel 6 or +Ch5 / -Ch4
 ```
 

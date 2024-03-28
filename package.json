@@ -1,10 +1,11 @@
 {
   "name": "@johntalton/mcp300X",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "",
+  "type": "module",
   "main": "src/mcp300X.js",
   "scripts": {
-    "lint": "./node_modules/.bin/eslint ."
+    "lint": "eslint ."
   },
   "repository": {
     "type": "git",
@@ -15,7 +16,35 @@
   "dependencies": {
   },
   "devDependencies": {
-    "eslint": "^7.3.1",
-    "mqtt": "^4.1.0"
+    "eslint": "^8.0.0",
+    "mqtt": "^5.5.0",
+    "@johntalton/eslint-config": "github:johntalton/eslint-config"
+  },
+  "eslintConfig": {
+    "extends": [
+      "eslint:recommended",
+      "@johntalton/eslint-config/es"
+    ],
+    "parserOptions": {
+      "ecmaVersion": "latest",
+      "sourceType": "module"
+    },
+    "env": {
+      "es6": true
+    },
+    "ignorePatterns": [
+      "test/**",
+      "examples/**/*"
+    ],
+    "rules": {
+      "no-magic-numbers": "off",
+      "semi": "warn",
+      "max-len": [
+        "error",
+        {
+          "code": 120
+        }
+      ]
+    }
   }
 }
